@@ -5,6 +5,8 @@ from reviews.models import Title
 
 
 class TitleFilter(FilterSet):
+    """Filters the list of works."""
+
     genre = django_filters.CharFilter(lookup_expr='slug')
     category = django_filters.CharFilter(lookup_expr="slug")
     name = django_filters.CharFilter(lookup_expr="contains")

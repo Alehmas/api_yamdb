@@ -40,7 +40,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if request.method == 'GET':
             serializer = self.get_serializer(user)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        elif request.method == 'PATCH':
+        if request.method == 'PATCH':
             if user.role == 'user':
                 serializer = UserSerializer(user,
                                             data=request.data, partial=True)

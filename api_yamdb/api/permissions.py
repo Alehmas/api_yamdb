@@ -4,6 +4,7 @@ from reviews.models import User
 
 
 class IsAuthorOrReadOnly(BasePermission):
+    """Permiss any action to the author or reading to any user."""
 
     def has_object_permission(self, request, view, obj):
         return (request.method in SAFE_METHODS
@@ -11,6 +12,7 @@ class IsAuthorOrReadOnly(BasePermission):
 
 
 class IsAdminOrAuthorOrReadOnly(BasePermission):
+    """Allow any action to the author and administrator or read to any user."""
 
     def has_permission(self, request, view):
         return (request.method in SAFE_METHODS
@@ -24,6 +26,8 @@ class IsAdminOrAuthorOrReadOnly(BasePermission):
 
 
 class CustomAdminPermission(BasePermission):
+    """Allow any action to the administrator."""
+
     def has_permission(self, request, view):
         return (request.user.is_authenticated
                 and (request.user.role == User.ADMIN
@@ -31,6 +35,8 @@ class CustomAdminPermission(BasePermission):
 
 
 class SafeMethodAdminPermission(BasePermission):
+    """Allow any action to the administrator or read to any user."""
+
     def has_object_permission(self, request, view, obj):
         return (request.method in SAFE_METHODS
                 or (request.user.is_authenticated
