@@ -16,6 +16,8 @@ User = get_user_model()
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """Serialization of all reciew requests."""
+
     author = SlugRelatedField(slug_field='username', read_only=True)
     score = serializers.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(10)]
@@ -30,7 +32,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         )
         if Review.objects.filter(title=title,
                                  author=request.user).exists():
-            raise ValidationError('Повторный комментарий')
+            raise ValidationError('Re-comment')
         return obj
 
     class Meta:
@@ -39,6 +41,8 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    """Serialization of all comment requests."""
+
     author = SlugRelatedField(slug_field='username', read_only=True)
 
     class Meta:
@@ -47,6 +51,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
+    """Serialization of all genre requests."""
+
     class Meta:
         exclude = ('id',)
         model = Genre
@@ -54,6 +60,8 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    """Serialization of all category requests."""
+
     class Meta:
         exclude = ('id',)
         model = Category
@@ -61,6 +69,8 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class TitleSerializerGet(serializers.ModelSerializer):
+    """Serialization of GET title requests."""
+
     genre = GenreSerializer(many=True, required=False)
     category = CategorySerializer()
     rating = serializers.IntegerField()
@@ -72,6 +82,8 @@ class TitleSerializerGet(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
+    """Serialization of POST, PUTCH, DELETE title requests."""
+
     genre = serializers.SlugRelatedField(
         many=True, slug_field='slug',
         queryset=Genre.objects.all(), required=False
@@ -88,11 +100,13 @@ class TitleSerializer(serializers.ModelSerializer):
     def validate_year(self, value):
         today = timezone.now().year
         if value > today:
-            raise serializers.ValidationError('Проверьте год!')
+            raise serializers.ValidationError('Check the year!')
         return value
 
 
 class AuthSerializer(serializers.ModelSerializer):
+    """Serialization of all auth requests."""
+
     class Meta:
         model = User
         fields = ('username', 'email')
@@ -137,6 +151,8 @@ class AuthSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Serialization of all user requests except admin."""
+
     role = serializers.CharField(read_only=True)
 
     class Meta:
@@ -146,6 +162,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class AdminUserSerializer(serializers.ModelSerializer):
+    """Serialization of all admin requests."""
+
     class Meta:
         model = User
         fields = ('bio', 'email', 'first_name',
@@ -153,6 +171,8 @@ class AdminUserSerializer(serializers.ModelSerializer):
 
 
 class TokenSerializer(serializers.ModelSerializer):
+    """Serialization request token."""
+
     confirmation_code = serializers.CharField(allow_blank=False)
 
     class Meta:
