@@ -24,6 +24,25 @@ User = get_user_model()
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    '''
+    list:
+    Getting a list of all users.
+
+    create:
+    Adding a user.
+
+    retrieve:
+    Getting a user by username or getting your account information.
+
+    update:
+    Changing user data by username.
+
+    partial_update:
+    Change your account information.
+
+    destroy:
+    Deleting a user by username.
+    '''
     queryset = User.objects.all()
     serializer_class = AdminUserSerializer
     permission_classes = (CustomAdminPermission,)
@@ -36,6 +55,7 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET', 'PATCH'],
             permission_classes=[IsAuthenticated])
     def me(self, request):
+        """Getting or changing your account information."""
         user = request.user
         if request.method == 'GET':
             serializer = self.get_serializer(user)
@@ -53,6 +73,22 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    """
+    list:
+    Getting a list of all reviews.
+
+    create:
+    Adding a new review.
+
+    retrieve:
+    Get review by id.
+
+    partial_update:
+    Partial review update by id.
+
+    destroy:
+    Delete review by id.
+    """
     serializer_class = ReviewSerializer
     permission_classes = [IsAdminOrAuthorOrReadOnly]
 
@@ -66,6 +102,22 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """
+    list:
+    Getting a list of all comments on a review.
+
+    create:
+    Adding a comment to a review.
+
+    retrieve:
+    Get a comment for a review by id.
+
+    partial_update:
+    Partially update the review comment by id.
+
+    destroy:
+    Deleting a review comment.
+    """
     serializer_class = CommentSerializer
     permission_classes = [IsAdminOrAuthorOrReadOnly]
 
@@ -79,6 +131,16 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(ListCreateDestroyViewSet):
+    """
+    list:
+    Getting a list of all categories.
+
+    create:
+    Adding a new category.
+
+    destroy:
+    Deleting a category.
+    """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     lookup_field = 'slug'
@@ -88,6 +150,16 @@ class CategoryViewSet(ListCreateDestroyViewSet):
 
 
 class GenryViewSet(ListCreateDestroyViewSet):
+    """
+    list:
+    Getting a list of all genres.
+
+    create:
+    Adding a Genre.
+
+    destroy:
+    Removing a genre.
+    """
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     lookup_field = 'slug'
@@ -97,6 +169,22 @@ class GenryViewSet(ListCreateDestroyViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
+    """
+    list:
+    Getting a list of all products.
+
+    create:
+    Adding a product.
+
+    retrieve:
+    Getting information about a product.
+
+    partial_update:
+    Partial update of information about the product.
+
+    destroy:
+    Deleting a product.
+    """
     queryset = Title.objects.annotate(rating=Avg('reviews__score'))
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
@@ -110,6 +198,10 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class AuthViewSet(viewsets.GenericViewSet):
+    """
+    Create new User.
+    Getting a JWT token in exchange for username and confirmation code..
+    """
     permission_classes = [permissions.AllowAny]
     serializer_class = AuthSerializer
 

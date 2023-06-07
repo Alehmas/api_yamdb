@@ -373,7 +373,7 @@ paths:
     post:
       tags:
         - TITLES
-      operationId: Adding a piece
+      operationId: Adding a product
       description: |
         Add a new piece.
 
