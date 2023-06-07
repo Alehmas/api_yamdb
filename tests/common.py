@@ -33,12 +33,12 @@ def auth_client(user):
 
 def create_categories(admin_client):
     data1 = {
-        'name': 'Фильм',
+        'name': 'Films',
         'slug': 'films'
     }
     admin_client.post('/api/v1/categories/', data=data1)
     data2 = {
-        'name': 'Книги',
+        'name': 'Books',
         'slug': 'books'
     }
     admin_client.post('/api/v1/categories/', data=data2)
@@ -47,13 +47,13 @@ def create_categories(admin_client):
 
 def create_genre(admin_client):
     result = []
-    data = {'name': 'Ужасы', 'slug': 'horror'}
+    data = {'name': 'Horror', 'slug': 'horror'}
     result.append(data)
     admin_client.post('/api/v1/genres/', data=data)
-    data = {'name': 'Комедия', 'slug': 'comedy'}
+    data = {'name': 'Comedy', 'slug': 'comedy'}
     result.append(data)
     admin_client.post('/api/v1/genres/', data=data)
-    data = {'name': 'Драма', 'slug': 'drama'}
+    data = {'name': 'Drama', 'slug': 'drama'}
     result.append(data)
     admin_client.post('/api/v1/genres/', data=data)
     return result
@@ -63,13 +63,13 @@ def create_titles(admin_client):
     genres = create_genre(admin_client)
     categories = create_categories(admin_client)
     result = []
-    data = {'name': 'Поворот туда', 'year': 2000, 'genre': [genres[0]['slug'], genres[1]['slug']],
-            'category': categories[0]['slug'], 'description': 'Крутое пике'}
+    data = {'name': 'Turn there', 'year': 2000, 'genre': [genres[0]['slug'], genres[1]['slug']],
+            'category': categories[0]['slug'], 'description': 'Steep dive'}
     response = admin_client.post('/api/v1/titles/', data=data)
     data['id'] = response.json()['id']
     result.append(data)
-    data = {'name': 'Проект', 'year': 2020, 'genre': [genres[2]['slug']], 'category': categories[1]['slug'],
-            'description': 'Главная драма года'}
+    data = {'name': 'Project', 'year': 2020, 'genre': [genres[2]['slug']], 'category': categories[1]['slug'],
+            'description': 'Top Drama of the Year'}
     response = admin_client.post('/api/v1/titles/', data=data)
     data['id'] = response.json()['id']
     result.append(data)

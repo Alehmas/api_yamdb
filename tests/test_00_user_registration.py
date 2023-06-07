@@ -16,20 +16,20 @@ class Test00UserRegistration:
         response = client.post(self.url_signup)
 
         assert response.status_code != 404, (
-            f'Страница `{self.url_signup}` не найдена, проверьте этот адрес в *urls.py*'
+            f'Page `{self.url_signup}` not found, check this address in *urls.py*'
         )
         code = 400
         assert response.status_code == code, (
-            f'Проверьте, что при {request_type} запросе `{self.url_signup}` без параметров '
-            f'не создается пользователь и возвращается статус {code}'
+            f'Check that {request_type} requests `{self.url_signup}` with no parameters '
+            f'user is not created and status is returned {code}'
         )
         response_json = response.json()
         empty_fields = ['email', 'username']
         for field in empty_fields:
             assert (field in response_json.keys()
                     and isinstance(response_json[field], list)), (
-                f'Проверьте, что при {request_type} запросе `{self.url_signup}` без параметров '
-                f'в ответе есть сообщение о том, какие поля заполенены неправильно'
+                f'Check that {request_type} requests `{self.url_signup}` with no parameters '
+                f'the response contains a message about which fields are filled incorrectly'
             )
 
     @pytest.mark.django_db(transaction=True)
@@ -45,12 +45,12 @@ class Test00UserRegistration:
         response = client.post(self.url_signup, data=invalid_data)
 
         assert response.status_code != 404, (
-            f'Страница `{self.url_signup}` не найдена, проверьте этот адрес в *urls.py*'
+            f'Page `{self.url_signup}` not found, check this address in *urls.py*'
         )
         code = 400
         assert response.status_code == code, (
-            f'Проверьте, что при {request_type} запросе `{self.url_signup}` с невалидными данными '
-            f'не создается пользователь и возвращается статус {code}'
+            f'Check that {request_type} requests `{self.url_signup}` with invalid data '
+            f'user is not created and status is returned {code}'
         )
 
         response_json = response.json()
@@ -58,8 +58,8 @@ class Test00UserRegistration:
         for field in invalid_fields:
             assert (field in response_json.keys()
                     and isinstance(response_json[field], list)), (
-                f'Проверьте, что при {request_type} запросе `{self.url_signup}` с невалидными параметрами, '
-                f'в ответе есть сообщение о том, какие поля заполенены неправильно'
+                f'Check that {request_type} requests `{self.url_signup}` with invalid parameters, '
+                f'the response contains a message about which fields are filled incorrectly'
             )
 
         valid_email = 'validemail@yamdb.fake'
@@ -68,8 +68,8 @@ class Test00UserRegistration:
         }
         response = client.post(self.url_signup, data=invalid_data)
         assert response.status_code == code, (
-            f'Проверьте, что при {request_type} запросе `{self.url_signup}` без username '
-            f'нельзя создать пользователя и возвращается статус {code}'
+            f'Check that {request_type} requests `{self.url_signup}` without username '
+            f'cannot create user and return status {code}'
         )
 
     @pytest.mark.django_db(transaction=True)
@@ -88,33 +88,33 @@ class Test00UserRegistration:
         outbox_after = mail.outbox  # email outbox after user create
 
         assert response.status_code != 404, (
-            f'Страница `{self.url_signup}` не найдена, проверьте этот адрес в *urls.py*'
+            f'Page `{self.url_signup}` not found, check this address in *urls.py*'
         )
 
         code = 200
         assert response.status_code == code, (
-            f'Проверьте, что при {request_type} запросе `{self.url_signup}` с валидными данными '
-            f'создается пользователь и возвращается статус {code}'
+            f'Check that {request_type} requests `{self.url_signup}` with valid data '
+            f'create user and return status {code}'
         )
         assert response.json() == valid_data, (
-            f'Проверьте, что при {request_type} запросе `{self.url_signup}` с валидными данными '
-            f'создается пользователь и возвращается статус {code}'
+            f'Check that {request_type} requests `{self.url_signup}` with valid data '
+            f'create user and return status {code}'
         )
 
         new_user = User.objects.filter(email=valid_email)
         assert new_user.exists(), (
-            f'Проверьте, что при {request_type} запросе `{self.url_signup}` с валидными данными '
-            f'создается пользователь и возвращается статус {code}'
+            f'Check that {request_type} requests `{self.url_signup}` with valid data '
+            f'create user and return status {code}'
         )
 
         # Test confirmation code
         assert len(outbox_after) == outbox_before_count + 1, (
-            f'Проверьте, что при {request_type} запросе `{self.url_signup}` с валидными данными, '
-            f'пользователю приходит email с кодом подтверждения'
+            f'Check if {request_type} is a `{self.url_signup}` request with valid data, '
+            f'the user receives an email with a confirmation code'
         )
         assert valid_email in outbox_after[0].to, (
-            f'Проверьте, что при {request_type} запросе `{self.url_signup}` с валидными данными, '
-            f'пользователю приходит письмо с кодом подтверждения на email, который он указал при регистрации'
+            f'Check if {request_type} is a `{self.url_signup}` request with valid data, '
+            f'the user receives an email with a confirmation code to the email he provided during registration'
         )
 
         new_user.delete()
@@ -135,31 +135,31 @@ class Test00UserRegistration:
         outbox_after = mail.outbox
 
         assert response.status_code != 404, (
-            f'Страница `{self.url_admin_create_user}` не найдена, проверьте этот адрес в *urls.py*'
+            f'Page `{self.url_admin_create_user}` not found, check this address in *urls.py*'
         )
 
         code = 201
         assert response.status_code == code, (
-            f'Проверьте, что при {request_type} запросе `{self.url_admin_create_user}` с валидными данными '
-            f'от имени администратора, создается пользователь и возвращается статус {code}'
+            f'Check that {request_type} requests `{self.url_admin_create_user}` with valid data '
+            f'as administrator, create user and return status {code}'
         )
         response_json = response.json()
         for field in valid_data:
             assert field in response_json and valid_data.get(field) == response_json.get(field), (
-                f'Проверьте, что при {request_type} запросе `{self.url_admin_create_user}` с валидными данными '
-                f'от имени администратора, в ответ приходит созданный объект пользователя в виде словаря'
+                f'Check that {request_type} requests `{self.url_admin_create_user}` with valid data '
+                f'on behalf of the administrator, the created user object in the form of a dictionary comes in response'
             )
 
         new_user = User.objects.filter(email=valid_email)
         assert new_user.exists(), (
-            f'Проверьте, что при {request_type} запросе `{self.url_admin_create_user}` с валидными данными '
-            f'от имени администратора, в БД создается пользователь и возвращается статус {code}'
+            f'Check that {request_type} requests `{self.url_admin_create_user}` with valid data '
+            f'on behalf of the administrator, a user is created in the database and the status is returned {code}'
         )
 
         # Test confirmation code not sent to user after admin registers him
         assert len(outbox_after) == outbox_before_count, (
-            f'Проверьте, что при {request_type} запросе `{self.url_admin_create_user}` с валидными данными '
-            f'от имени администратора, пользователю НЕ приходит email с кодом подтверждения'
+            f'Check that {request_type} requests `{self.url_admin_create_user}` with valid data '
+            f'on behalf of the administrator, the user does NOT receive an email with a verification code'
         )
 
         new_user.delete()
@@ -170,13 +170,13 @@ class Test00UserRegistration:
         request_type = 'POST'
         response = client.post(self.url_token)
         assert response.status_code != 404, (
-            f'Страница `{self.url_token}` не найдена, проверьте этот адрес в *urls.py*'
+            f'Page `{self.url_token}` not found, check this address in *urls.py*'
         )
 
         code = 400
         assert response.status_code == code, (
-            f'Проверьте, что при POST запросе `{self.url_token}` без параметров, '
-            f'возвращается статус {code}'
+            f'Check that when POSTing `{self.url_token}` with no parameters, '
+            f'returning status {code}'
         )
 
         invalid_data = {
@@ -184,8 +184,8 @@ class Test00UserRegistration:
         }
         response = client.post(self.url_token, data=invalid_data)
         assert response.status_code == code, (
-            f'Проверьте, что при POST запросе `{self.url_token}` без username, '
-            f'возвращается статус {code}'
+            f'Check that when POSTing `{self.url_token}` without username, '
+            f'returning status {code}'
         )
 
         invalid_data = {
@@ -195,8 +195,8 @@ class Test00UserRegistration:
         response = client.post(self.url_token, data=invalid_data)
         code = 404
         assert response.status_code == code, (
-            f'Проверьте, что при POST запросе `{self.url_token}` с несуществующим username, '
-            f'возвращается статус {code}'
+            f'Check that when POSTing a `{self.url_token}` request with a non-existent username, '
+            f'returning status {code}'
         )
 
         valid_email = 'valid@yamdb.fake'
@@ -209,8 +209,8 @@ class Test00UserRegistration:
         response = client.post(self.url_signup, data=valid_data)
         code = 200
         assert response.status_code == code, (
-            f'Проверьте, что при {request_type} запросе `{self.url_signup}` с валидными данными '
-            f'создается пользователь и возвращается статус {code}'
+            f'Check that {request_type} requests `{self.url_signup}` with valid data '
+            f'create user and return status {code}'
         )
 
         invalid_data = {
@@ -220,8 +220,8 @@ class Test00UserRegistration:
         response = client.post(self.url_token, data=invalid_data)
         code = 400
         assert response.status_code == code, (
-            f'Проверьте, что при POST запросе `{self.url_token}` с валидным username, '
-            f'но невалидным confirmation_code, возвращается статус {code}'
+            f'Check that when POSTing `{self.url_token}` with a valid username, '
+            f'but invalid confirmation_code, return status {code}'
         )
 
     @pytest.mark.django_db(transaction=True)
@@ -237,8 +237,8 @@ class Test00UserRegistration:
         response = client.post(self.url_signup, data=valid_data)
         code = 400
         assert response.status_code == code, (
-            f'Проверьте, что при {request_type} запросе `{self.url_signup}` '
-            f'нельзя создать пользователя с username = "me" и возвращается статус {code}'
+            f'Check that when {request_type} request `{self.url_signup}` '
+            f'cannot create user with username = "me" and return status {code}'
         )
 
     @pytest.mark.django_db(transaction=True)
@@ -256,8 +256,8 @@ class Test00UserRegistration:
         response = client.post(self.url_signup, data=valid_data)
         code = 200
         assert response.status_code == code, (
-            f'Проверьте, что при {request_type} запросе `{self.url_signup}` '
-            f'можно создать пользователя с валидными данными и возвращается статус {code}'
+            f'Check that when {request_type} request `{self.url_signup}` '
+            f'you can create a user with valid data and the status is returned {code}'
         )
 
         duplicate_email_data = {
@@ -267,8 +267,8 @@ class Test00UserRegistration:
         response = client.post(self.url_signup, data=duplicate_email_data)
         code = 400
         assert response.status_code == code, (
-            f'Проверьте, что при {request_type} запросе `{self.url_signup}` нельзя создать '
-            f'пользователя, email которого уже зарегистрирован и возвращается статус {code}'
+            f'Check that {request_type} request `{self.url_signup}` cannot be created '
+            f'of a user whose email is already registered and the status is returned {code}'
         )
         duplicate_username_data = {
             'email': valid_email_2,
@@ -276,6 +276,6 @@ class Test00UserRegistration:
         }
         response = client.post(self.url_signup, data=duplicate_username_data)
         assert response.status_code == code, (
-            f'Проверьте, что при {request_type} запросе `{self.url_signup}` нельзя создать '
-            f'пользователя, username которого уже зарегистрирован и возвращается статус {code}'
+            f'Check that {request_type} request `{self.url_signup}` cannot be created '
+            f'user whose username is already registered and return status {code}'
         )
