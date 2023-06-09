@@ -9,10 +9,10 @@ class Test02CategoryAPI:
     def test_01_category_not_auth(self, client):
         response = client.get('/api/v1/categories/')
         assert response.status_code != 404, (
-            'Страница `/api/v1/categories/` не найдена, проверьте этот адрес в *urls.py*'
+            'Page `/api/v1/categories/` not found, check this address in *urls.py*'
         )
         assert response.status_code == 200, (
-            'Проверьте, что при GET запросе `/api/v1/categories/` без токена авторизации возвращается статус 200'
+            'Check that a GET request to `/api/v1/categories/` without an auth token returns status 200'
         )
 
     @pytest.mark.django_db(transaction=True)
@@ -20,73 +20,73 @@ class Test02CategoryAPI:
         data = {}
         response = admin_client.post('/api/v1/categories/', data=data)
         assert response.status_code == 400, (
-            'Проверьте, что при POST запросе `/api/v1/categories/` с не правильными данными возвращает статус 400'
+            'Check that POSTing `/api/v1/categories/` with invalid data returns status 400'
         )
         data = {
-            'name': 'Фильм',
+            'name': 'Films',
             'slug': 'films'
         }
         response = admin_client.post('/api/v1/categories/', data=data)
         assert response.status_code == 201, (
-            'Проверьте, что при POST запросе `/api/v1/categories/` с правильными данными возвращает статус 201'
+            'Check that POSTing `/api/v1/categories/` with valid data returns status 201'
         )
         data = {
-            'name': 'Новые фильмы',
+            'name': 'New films',
             'slug': 'films'
         }
         response = admin_client.post('/api/v1/categories/', data=data)
         assert response.status_code == 400, (
-            'Проверьте, что при POST запросе `/api/v1/categories/` нельзя создать 2 категории с одинаковым `slug`'
+            'Check that a POST request to `/api/v1/categories/` cannot create 2 categories with the same `slug`'
         )
         data = {
-            'name': 'Книги',
+            'name': 'Books',
             'slug': 'books'
         }
         response = admin_client.post('/api/v1/categories/', data=data)
         assert response.status_code == 201, (
-            'Проверьте, что при POST запросе `/api/v1/categories/` с правильными данными возвращает статус 201'
+            'Check that POSTing `/api/v1/categories/` with valid data returns status 201'
         )
         response = admin_client.get('/api/v1/categories/')
         assert response.status_code == 200, (
-            'Проверьте, что при GET запросе `/api/v1/categories/` возвращает статус 200'
+            'Check that a GET request to `/api/v1/categories/` returns status 200'
         )
         data = response.json()
         assert 'count' in data, (
-            'Проверьте, что при GET запросе `/api/v1/categories/` возвращаете данные с пагинацией. '
-            'Не найден параметр `count`'
+            'Check that a GET request to `/api/v1/categories/` returns paginated data. '
+            'Parameter `count` not found'
         )
         assert 'next' in data, (
-            'Проверьте, что при GET запросе `/api/v1/categories/` возвращаете данные с пагинацией. '
-            'Не найден параметр `next`'
+            'Check that a GET request to `/api/v1/categories/` returns paginated data. '
+            'Parameter `next` not found'
         )
         assert 'previous' in data, (
-            'Проверьте, что при GET запросе `/api/v1/categories/` возвращаете данные с пагинацией. '
-            'Не найден параметр `previous`'
+            'Check that a GET request to `/api/v1/categories/` returns paginated data. '
+            'Parameter `previous` not found'
         )
         assert 'results' in data, (
-            'Проверьте, что при GET запросе `/api/v1/categories/` возвращаете данные с пагинацией. '
-            'Не найден параметр `results`'
+            'Check that a GET request to `/api/v1/categories/` returns paginated data. '
+            'Parameter `results` not found'
         )
         assert data['count'] == 2, (
-            'Проверьте, что при GET запросе `/api/v1/categories/` возвращаете данные с пагинацией. '
-            'Значение параметра `count` не правильное'
+            'Check that a GET request to `/api/v1/categories/` returns paginated data. '
+            'The value of the `count` parameter is invalid'
         )
         assert type(data['results']) == list, (
-            'Проверьте, что при GET запросе `/api/v1/categories/` возвращаете данные с пагинацией. '
-            'Тип параметра `results` должен быть список'
+            'Check that a GET request to `/api/v1/categories/` returns paginated data. '
+            'The type of the `results` parameter must be a list'
         )
         assert len(data['results']) == 2, (
-            'Проверьте, что при GET запросе `/api/v1/categories/` возвращаете данные с пагинацией. '
-            'Значение параметра `results` не правильное'
+            'Check that a GET request to `/api/v1/categories/` returns paginated data. '
+            'The value of the `results` parameter is invalid'
         )
-        assert {'name': 'Книги', 'slug': 'books'} in data['results'], (
-            'Проверьте, что при GET запросе `/api/v1/categories/` возвращаете данные с пагинацией. '
-            'Значение параметра `results` не правильное'
+        assert {'name': 'Books', 'slug': 'books'} in data['results'], (
+            'Check that a GET request to `/api/v1/categories/` returns paginated data. '
+            'The value of the `results` parameter is invalid'
         )
-        response = admin_client.get('/api/v1/categories/?search=Книги')
+        response = admin_client.get('/api/v1/categories/?search=Books')
         data = response.json()
         assert len(data['results']) == 1, (
-            'Проверьте, что при GET запросе `/api/v1/categories/` фильтуется по search параметру названия категории'
+            'Check that GET requests to `/api/v1/categories/` are filtered by the category name search parameter'
         )
 
     @pytest.mark.django_db(transaction=True)
@@ -94,87 +94,87 @@ class Test02CategoryAPI:
         create_categories(admin_client)
         response = admin_client.delete('/api/v1/categories/books/')
         assert response.status_code == 204, (
-            'Проверьте, что при DELETE запросе `/api/v1/categories/{slug}/` возвращаете статус 204'
+            'Check that DELETE request to `/api/v1/categories/{slug}/` returns status 204'
         )
         response = admin_client.get('/api/v1/categories/')
         test_data = response.json()['results']
         assert len(test_data) == 1, (
-            'Проверьте, что при DELETE запросе `/api/v1/categories/{slug}/` удаляете категорию '
+            'Check that the DELETE request to `/api/v1/categories/{slug}/` deletes the category '
         )
         response = admin_client.get('/api/v1/categories/books/')
         code = 405
         assert response.status_code == code, (
-            'Проверьте, что при GET запросе `/api/v1/categories/{slug}/` '
-            f'возвращаете статус {code}'
+            'Check that GET request `/api/v1/categories/{slug}/` '
+            f'return status {code}'
         )
         response = admin_client.patch('/api/v1/categories/books/')
         assert response.status_code == code, (
-            'Проверьте, что при PATCH запросе `/api/v1/categories/{slug}/` '
-            f'возвращаете статус {code}'
+            'Check that on PATCH request `/api/v1/categories/{slug}/` '
+            f'return status {code}'
         )
 
     def check_permissions(self, user, user_name, categories):
         client_user = auth_client(user)
         data = {
-            'name': 'Музыка',
+            'name': 'Music',
             'slug': 'music'
         }
         response = client_user.post('/api/v1/categories/', data=data)
         assert response.status_code == 403, (
-            f'Проверьте, что при POST запросе `/api/v1/categories/` '
-            f'с токеном авторизации {user_name} возвращается статус 403'
+            f'Check that when POSTing `/api/v1/categories/` '
+            f'with auth token {user_name} returns status 403'
         )
         response = client_user.delete(f'/api/v1/categories/{categories[0]["slug"]}/')
         assert response.status_code == 403, (
-            f'Проверьте, что при DELETE запросе `/api/v1/categories/{{slug}}/` '
-            f'с токеном авторизации {user_name} возвращается статус 403'
+            f'Check that on DELETE request `/api/v1/categories/{{slug}}/` '
+            f'with auth token {user_name} returns status 403'
         )
 
     @pytest.mark.django_db(transaction=True)
     def test_04_category_check_permission_admin(self, client, admin_client):
         categories = create_categories(admin_client)
         data = {
-            'name': 'Музыка',
+            'name': 'Music',
             'slug': 'music'
         }
         response = client.post('/api/v1/categories/', data=data)
         assert response.status_code == 401, (
-            'Проверьте, что при POST запросе `/api/v1/categories/` '
-            'без токена авторизации возвращается статус 401'
+            'Check that when POSTing `/api/v1/categories/` '
+            'no auth token returned status 401'
         )
         response = client.delete(f'/api/v1/categories/{categories[0]["slug"]}/')
         assert response.status_code == 401, (
-            'Проверьте, что при DELETE запросе `/api/v1/categories/{{slug}}/` '
-            'без токена авторизации возвращается статус 401'
+            'Check that on DELETE request `/api/v1/categories/{{slug}}/` '
+            'no auth token returned status 401'
         )
         user, moderator = create_users_api(admin_client)
-        self.check_permissions(user, 'обычного пользователя', categories)
-        self.check_permissions(moderator, 'модератора', categories)
+        self.check_permissions(user, 'regular user', categories)
+        self.check_permissions(moderator, 'moderator', categories)
 
     @pytest.mark.django_db(transaction=True)
     def test_05_category_create_user(self, user_client):
         url = '/api/v1/categories/'
         data = {
-            'name': 'Всякое разное',
+            'name': 'Anything else',
             'slug': 'something'
         }
         response = user_client.post(url, data=data)
         code = 403
         assert response.status_code == code, (
-            f'Проверьте, что при POST запросе на `{url}`, создание категорий недоступно для '
-            f'пользователя с ролью user'
+            f'Check that when POSTing a request to `{url}`, category creation is disabled for '
+            f'user with role user'
         )
 
     @pytest.mark.django_db(transaction=True)
     def test_06_category_create_moderator(self, moderator_client):
         url = '/api/v1/categories/'
         data = {
-            'name': 'Всякое разное',
+            'name': 'Anything else',
             'slug': 'something'
         }
         response = moderator_client.post(url, data=data)
         code = 403
         assert response.status_code == code, (
-            f'Проверьте, что при POST запросе на `{url}`, создание категорий недоступно для '
-            f'пользователя с ролью moderator'
+            f'Check that when POSTing a request to `{url}`, category creation is disabled for '
+            f'user with role moderator'
         )

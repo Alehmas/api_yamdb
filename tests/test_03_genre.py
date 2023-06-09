@@ -9,10 +9,10 @@ class Test03GenreAPI:
     def test_01_genre_not_auth(self, client):
         response = client.get('/api/v1/genres/')
         assert response.status_code != 404, (
-            'Страница `/api/v1/genres/` не найдена, проверьте этот адрес в *urls.py*'
+            'Page `/api/v1/genres/` not found, check this address in *urls.py*'
         )
         assert response.status_code == 200, (
-            'Проверьте, что при GET запросе `/api/v1/genres/` без токена авторизации возвращается статус 200'
+            'Check that a GET request to `/api/v1/genres/` without an auth token returns status 200'
         )
 
     @pytest.mark.django_db(transaction=True)
@@ -20,64 +20,64 @@ class Test03GenreAPI:
         data = {}
         response = admin_client.post('/api/v1/genres/', data=data)
         assert response.status_code == 400, (
-            'Проверьте, что при POST запросе `/api/v1/genres/` с не правильными данными возвращает статус 400'
+            'Check that POSTing `/api/v1/genres/` with invalid data returns status 400'
         )
-        data = {'name': 'Ужасы', 'slug': 'horror'}
+        data = {'name': 'Horror', 'slug': 'horror'}
         response = admin_client.post('/api/v1/genres/', data=data)
         assert response.status_code == 201, (
-            'Проверьте, что при POST запросе `/api/v1/genres/` с правильными данными возвращает статус 201'
+            'Check that POSTing `/api/v1/genres/` with valid data returns status 201'
         )
-        data = {'name': 'Триллер', 'slug': 'horror'}
+        data = {'name': 'Horror', 'slug': 'horror'}
         response = admin_client.post('/api/v1/genres/', data=data)
         assert response.status_code == 400, (
-            'Проверьте, что при POST запросе `/api/v1/genres/` нельзя создать 2 жанра с одинаковым `slug`'
+            'Check that a POST request to `/api/v1/genres/` cannot create 2 genres with the same `slug`'
         )
-        data = {'name': 'Комедия', 'slug': 'comedy'}
+        data = {'name': 'Comedy', 'slug': 'comedy'}
         response = admin_client.post('/api/v1/genres/', data=data)
         assert response.status_code == 201, (
-            'Проверьте, что при POST запросе `/api/v1/genres/` с правильными данными возвращает статус 201'
+            'Check that POSTing `/api/v1/genres/` with valid data returns status 201'
         )
         response = admin_client.get('/api/v1/genres/')
         assert response.status_code == 200, (
-            'Проверьте, что при GET запросе `/api/v1/genres/` возвращает статус 200'
+            'Check that a GET request to `/api/v1/genres/` returns status 200'
         )
         data = response.json()
         assert 'count' in data, (
-            'Проверьте, что при GET запросе `/api/v1/genres/` возвращаете данные с пагинацией. '
-            'Не найден параметр `count`'
+            'Check that GET request to `/api/v1/genres/` returns data with pagination. '
+            'Parameter `count` not found'
         )
         assert 'next' in data, (
-            'Проверьте, что при GET запросе `/api/v1/genres/` возвращаете данные с пагинацией. '
-            'Не найден параметр `next`'
+            'Check that GET request to `/api/v1/genres/` returns data with pagination. '
+            'Parameter `next` not found'
         )
         assert 'previous' in data, (
-            'Проверьте, что при GET запросе `/api/v1/genres/` возвращаете данные с пагинацией. '
-            'Не найден параметр `previous`'
+            'Check that GET request to `/api/v1/genres/` returns data with pagination. '
+            'Parameter `previous` not found'
         )
         assert 'results' in data, (
-            'Проверьте, что при GET запросе `/api/v1/genres/` возвращаете данные с пагинацией. '
-            'Не найден параметр `results`'
+            'Check that GET request to `/api/v1/genres/` returns data with pagination. '
+            'Parameter `results` not found'
         )
         assert data['count'] == 2, (
-            'Проверьте, что при GET запросе `/api/v1/genres/` возвращаете данные с пагинацией. '
-            'Значение параметра `count` не правильное'
+            'Check that GET request to `/api/v1/genres/` returns data with pagination. '
+            'The value of the `count` parameter is invalid'
         )
         assert type(data['results']) == list, (
-            'Проверьте, что при GET запросе `/api/v1/genres/` возвращаете данные с пагинацией. '
-            'Тип параметра `results` должен быть список'
+            'Check that GET request to `/api/v1/genres/` returns data with pagination. '
+            'The type of the `results` parameter must be a list'
         )
         assert len(data['results']) == 2, (
-            'Проверьте, что при GET запросе `/api/v1/genres/` возвращаете данные с пагинацией. '
-            'Значение параметра `results` не правильное'
+            'Check that GET request to `/api/v1/genres/` returns data with pagination. '
+            'The value of the `results` parameter is invalid'
         )
-        assert {'name': 'Ужасы', 'slug': 'horror'} in data['results'], (
-            'Проверьте, что при GET запросе `/api/v1/genres/` возвращаете данные с пагинацией. '
-            'Значение параметра `results` не правильное'
+        assert {'name': 'Horror', 'slug': 'horror'} in data['results'], (
+            'Check that GET request to `/api/v1/genres/` returns data with pagination. '
+            'The value of the `results` parameter is invalid'
         )
-        response = admin_client.get('/api/v1/genres/?search=Ужасы')
+        response = admin_client.get('/api/v1/genres/?search=Horror')
         data = response.json()
         assert len(data['results']) == 1, (
-            'Проверьте, что при GET запросе `/api/v1/genres/` фильтуется по search параметру названия жанра '
+            'Check that GET requests to `/api/v1/genres/` are filtered by the genre name search parameter '
         )
 
     @pytest.mark.django_db(transaction=True)
@@ -85,84 +85,84 @@ class Test03GenreAPI:
         genres = create_genre(admin_client)
         response = admin_client.delete(f'/api/v1/genres/{genres[0]["slug"]}/')
         assert response.status_code == 204, (
-            'Проверьте, что при DELETE запросе `/api/v1/genres/{slug}/` возвращаете статус 204'
+            'Check that DELETE request to `/api/v1/genres/{slug}/` returns status 204'
         )
         response = admin_client.get('/api/v1/genres/')
         test_data = response.json()['results']
         assert len(test_data) == len(genres) - 1, (
-            'Проверьте, что при DELETE запросе `/api/v1/genres/{slug}/` удаляете жанр '
+            'Check that DELETE requesting `/api/v1/genres/{slug}/` deletes the genre '
         )
         response = admin_client.get(f'/api/v1/genres/{genres[0]["slug"]}/')
         assert response.status_code == 405, (
-            'Проверьте, что при GET запросе `/api/v1/genres/{slug}/` возвращаете статус 405'
+            'Check that a GET request to `/api/v1/genres/{slug}/` returns status 405'
         )
         response = admin_client.patch(f'/api/v1/genres/{genres[0]["slug"]}/')
         assert response.status_code == 405, (
-            'Проверьте, что при PATCH запросе `/api/v1/genres/{slug}/` возвращаете статус 405'
+            'Check that PATCH requesting `/api/v1/genres/{slug}/` returns status 405'
         )
 
     def check_permissions(self, user, user_name, genres):
         client_user = auth_client(user)
         data = {
-            'name': 'Боевик',
+            'name': 'Action',
             'slug': 'action'
         }
         response = client_user.post('/api/v1/genres/', data=data)
         assert response.status_code == 403, (
-            f'Проверьте, что при POST запросе `/api/v1/genres/` '
-            f'с токеном авторизации {user_name} возвращается статус 403'
+            f'Check that when POSTing `/api/v1/genres/` '
+            f'with auth token {user_name} returns status 403'
         )
         response = client_user.delete(f'/api/v1/genres/{genres[0]["slug"]}/')
         assert response.status_code == 403, (
-            f'Проверьте, что при DELETE запросе `/api/v1/genres/{{slug}}/` '
-            f'с токеном авторизации {user_name} возвращается статус 403'
+            f'Check that on DELETE request `/api/v1/genres/{{slug}}/` '
+            f'with auth token {user_name} returns status 403'
         )
 
     @pytest.mark.django_db(transaction=True)
     def test_04_genres_check_permission(self, client, admin_client):
         genres = create_genre(admin_client)
         data = {
-            'name': 'Боевик',
+            'name': 'Action',
             'slug': 'action'
         }
         response = client.post('/api/v1/genres/', data=data)
         assert response.status_code == 401, (
-            'Проверьте, что при POST запросе `/api/v1/genres/` '
-            'без токена авторизации возвращается статус 401'
+            'Check that when POSTing `/api/v1/genres/` '
+            'no auth token returned status 401'
         )
         response = client.delete(f'/api/v1/genres/{genres[0]["slug"]}/')
         assert response.status_code == 401, (
-            'Проверьте, что при DELETE запросе `/api/v1/genres/{{slug}}/` '
-            'без токена авторизации возвращается статус 401'
+            'Check that on DELETE request `/api/v1/genres/{{slug}}/` '
+            'no auth token returned status 401'
         )
         user, moderator = create_users_api(admin_client)
-        self.check_permissions(user, 'обычного пользователя', genres)
-        self.check_permissions(moderator, 'модератора', genres)
+        self.check_permissions(user, 'ordinary user', genres)
+        self.check_permissions(moderator, 'moderator', genres)
 
     @pytest.mark.django_db(transaction=True)
     def test_05_genre_create_user(self, user_client):
         url = '/api/v1/genres/'
         data = {
-            'name': 'Всякое разное',
+            'name': 'Anything else',
             'slug': 'something'
         }
         response = user_client.post(url, data=data)
         code = 403
         assert response.status_code == code, (
-            f'Проверьте, что при POST запросе на `{url}`, создание жанров недоступно для '
-            f'пользователя с ролью user'
+            f'Check that when POSTing a `{url}`, creating genres is not available for '
+            f'user with role user'
         )
 
     @pytest.mark.django_db(transaction=True)
     def test_06_genre_create_moderator(self, moderator_client):
         url = '/api/v1/genres/'
         data = {
-            'name': 'Всякое разное',
+            'name': 'Anything else',
             'slug': 'something'
         }
         response = moderator_client.post(url, data=data)
         code = 403
         assert response.status_code == code, (
-            f'Проверьте, что при POST запросе на `{url}`, создание жанров недоступно для '
-            f'пользователя с ролью moderator'
+            f'Check that when POSTing a `{url}`, creating genres is not available for '
+            f'user with role moderator'
         )
