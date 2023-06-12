@@ -11,19 +11,19 @@ class Test05ReviewAPI:
         titles, _, _ = create_titles(admin_client)
         response = client.get(f'/api/v1/titles/{titles[0]["id"]}/reviews/')
         assert response.status_code != 404, (
-            'Страница `/api/v1/titles/{title_id}/reviews/` не найдена, проверьте этот адрес в *urls.py*'
+            'Page `/api/v1/titles/{title_id}/reviews/` not found, check this address in *urls.py*'
         )
         assert response.status_code == 200, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/` '
-            'без токена авторизации возвращается статус 200'
+            'Check that on GET request `/api/v1/titles/{title_id}/reviews/` '
+            'without authorization token returns status 200'
         )
 
     def create_review(self, client_user, title_id, text, score):
         data = {'text': text, 'score': score}
         response = client_user.post(f'/api/v1/titles/{title_id}/reviews/', data=data)
         assert response.status_code == 201, (
-            'Проверьте, что при POST запросе `/api/v1/titles/{title_id}/reviews/` '
-            'с правильными данными возвращает статус 201, api доступен для любого аутентифицированного пользователя'
+            'Check that when POSTing `/api/v1/titles/{title_id}/reviews/` '
+            'with correct data returns status 201, api is available to any authenticated user'
         )
         return response
 
@@ -36,34 +36,34 @@ class Test05ReviewAPI:
         data = {}
         response = admin_client.post(f'/api/v1/titles/{titles[0]["id"]}/reviews/', data=data)
         assert response.status_code == 400, (
-            'Проверьте, что при POST запросе `/api/v1/titles/{title_id}/reviews/` '
-            'с не правильными данными возвращает статус 400'
+            'Check that when POSTing `/api/v1/titles/{title_id}/reviews/` '
+            'with invalid data returns status 400'
         )
         self.create_review(admin_client, titles[0]["id"], 'qwerty', 5)
         data = {
-            'text': 'Шляпа',
+            'text': 'Hat',
             'score': 1
         }
         response = admin_client.post(f'/api/v1/titles/{titles[0]["id"]}/reviews/', data=data)
         code = 400
         assert response.status_code == code, (
-            'Проверьте, что при POST запросе на `/api/v1/titles/{title_id}/reviews/` '
-            'нельзя добавить второй отзыв на то же самое произведение, и возвращается '
-            f'статус {code}'
+            'Check that when POSTing a request to `/api/v1/titles/{title_id}/reviews/` '
+            'cannot add a second review to the same work, and returns '
+            f'status {code}'
         )
         try:
             from reviews.models import Review, Title
         except Exception as e:
             assert False, (
-                'Не удалось импортировать модели из приложения reviews. '
-                f'Ошибка: {e}'
+                'Failed to import models from the reviews application. '
+                f'Error: {e}'
             )
         from django.db.utils import IntegrityError
         title = Title.objects.get(pk=titles[0]["id"])
         review = None
         try:
             review = Review.objects.create(
-                text='Текст второго отзыва',
+                text='Second review text',
                 score='5',
                 author=admin,
                 title=title
@@ -72,86 +72,86 @@ class Test05ReviewAPI:
             pass
 
         assert review is None, (
-            'Проверьте, что через прямой запрос к Django ORM '
-            'нельзя добавить второй отзыв на то же самое произведение. '
-            'Эта проверка осуществляется на уровне модели.'
+            'Check that via a direct request to Django ORM '
+            'You cannot add a second review to the same work. '
+            'This check is done at the model level.'
         )
         response = admin_client.put(f'/api/v1/titles/{titles[0]["id"]}/reviews/', data=data)
         code = 405
         assert response.status_code == code, (
-            'Проверьте, что PUT запрос на `/api/v1/titles/{title_id}/reviews/` '
-            'не разрешен, и возвращается '
-            f'статус {code}'
+            'Check that PUT request to `/api/v1/titles/{title_id}/reviews/` '
+            'not allowed and returned '
+            f'status {code}'
         )
-        self.create_review(client_user, titles[0]["id"], 'Ну такое', 3)
-        self.create_review(client_moderator, titles[0]["id"], 'Под пивко пойдет', 4)
+        self.create_review(client_user, titles[0]["id"], 'Well, that', 3)
+        self.create_review(client_moderator, titles[0]["id"], 'Will go for a beer', 4)
 
-        self.create_review(admin_client, titles[1]["id"], 'Ваще ни о чем', 2)
-        self.create_review(client_user, titles[1]["id"], 'Нормалдес', 4)
-        response = self.create_review(client_moderator, titles[1]["id"], 'Так себе', 3)
+        self.create_review(admin_client, titles[1]["id"], 'More about nothing', 2)
+        self.create_review(client_user, titles[1]["id"], 'Normal', 4)
+        response = self.create_review(client_moderator, titles[1]["id"], 'So-so', 3)
 
         assert type(response.json().get('id')) == int, (
-            'Проверьте, что при POST запросе `/api/v1/titles/{title_id}/reviews/` '
-            'возвращаете данные созданного объекта. Значение `id` нет или не является целым числом.'
+            'Check that when POSTing `/api/v1/titles/{title_id}/reviews/` '
+            'return the data of the created object. The value of `id` is not present or is not an integer.'
         )
 
         data = {'text': 'kjdfg', 'score': 4}
         response = admin_client.post('/api/v1/titles/999/reviews/', data=data)
         assert response.status_code == 404, (
-            'Проверьте, что при POST запросе `/api/v1/titles/{title_id}/reviews/` '
-            'с не существующим title_id возвращается статус 404.'
+            'Check that when POSTing `/api/v1/titles/{title_id}/reviews/` '
+            'with a non-existent title_id, a 404 status is returned.'
         )
-        data = {'text': 'аывв', 'score': 11}
+        data = {'text': 'asfd', 'score': 11}
         response = admin_client.post(f'/api/v1/titles/{titles[0]["id"]}/reviews/', data=data)
         assert response.status_code == 400, (
-            'Проверьте, что при POST запросе `/api/v1/titles/{title_id}/reviews/` '
-            'с `score` больше 10 возвращается статус 400.'
+            'Check that when POSTing `/api/v1/titles/{title_id}/reviews/` '
+            'with `score` greater than 10, status 400 is returned.'
         )
-        data = {'text': 'аывв', 'score': 0}
+        data = {'text': 'asfd', 'score': 0}
         response = admin_client.post(f'/api/v1/titles/{titles[0]["id"]}/reviews/', data=data)
         assert response.status_code == 400, (
             'Проверьте, что при POST запросе `/api/v1/titles/{title_id}/reviews/` '
             'с `score` меньше 1 возвращается статус 400.'
         )
-        data = {'text': 'аывв', 'score': 2}
+        data = {'text': 'asfd', 'score': 2}
         response = admin_client.post(f'/api/v1/titles/{titles[0]["id"]}/reviews/', data=data)
         assert response.status_code == 400, (
-            'Проверьте, что при POST запросе `/api/v1/titles/{title_id}/reviews/` '
-            'на уже оставленный отзыв для объекта возвращается статус 400.'
+            'Check that when POSTing `/api/v1/titles/{title_id}/reviews/` '
+            'A status 400 is returned for an object that has already been reviewed.'
         )
 
         response = admin_client.get(f'/api/v1/titles/{titles[0]["id"]}/reviews/')
         assert response.status_code == 200, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/` возвращает статус 200'
+            'Check that GET request `/api/v1/titles/{title_id}/reviews/` returns status 200'
         )
         data = response.json()
         assert 'count' in data, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/` возвращаете данные с пагинацией. '
-            'Не найден параметр `count`'
+            'Check that a GET request to `/api/v1/titles/{title_id}/reviews/` returns data with pagination. '
+            'Parameter `count` not found'
         )
         assert 'next' in data, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/` возвращаете данные с пагинацией. '
-            'Не найден параметр `next`'
+            'Check that a GET request to `/api/v1/titles/{title_id}/reviews/` returns data with pagination. '
+            'Parameter `next` not found'
         )
         assert 'previous' in data, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/` возвращаете данные с пагинацией. '
-            'Не найден параметр `previous`'
+            'Check that a GET request to `/api/v1/titles/{title_id}/reviews/` returns data with pagination. '
+            'Parameter `previous` not found'
         )
         assert 'results' in data, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/` возвращаете данные с пагинацией. '
-            'Не найден параметр `results`'
+            'Check that a GET request to `/api/v1/titles/{title_id}/reviews/` returns data with pagination. '
+            'Parameter `results` not found'
         )
         assert data['count'] == 3, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/` возвращаете данные с пагинацией. '
-            'Значение параметра `count` не правильное'
+            'Check that a GET request to `/api/v1/titles/{title_id}/reviews/` returns data with pagination. '
+            'The value of the `count` parameter is invalid'
         )
         assert type(data['results']) == list, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/` возвращаете данные с пагинацией. '
-            'Тип параметра `results` должен быть список'
+            'Check that a GET request to `/api/v1/titles/{title_id}/reviews/` returns data with pagination. '
+            'The type of the `results` parameter must be a list'
         )
         assert len(data['results']) == 3, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/` возвращаете данные с пагинацией. '
-            'Значение параметра `results` не правильное'
+            'Check that a GET request to `/api/v1/titles/{title_id}/reviews/` returns data with pagination. '
+            'The value of the `results` parameter is invalid'
         )
 
         if data['results'][0].get('text') == 'qwerty':
@@ -162,39 +162,39 @@ class Test05ReviewAPI:
             review = data['results'][2]
         else:
             assert False, (
-                'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/` '
-                'возвращаете данные с пагинацией. Значение параметра `results` неправильное, '
-                '`text` не найдено или не сохранилось при POST запросе.'
+                'Check that on GET request `/api/v1/titles/{title_id}/reviews/` '
+                'return data with pagination. The value of the `results` parameter is invalid, '
+                '`text` not found or not saved on POST request.'
             )
 
         assert review.get('score') == 5, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/` возвращаете данные с пагинацией. '
-            'Значение параметра `results` неправильное, `score` не найдено или не сохранилось при POST запросе'
+            'Check that a GET request to `/api/v1/titles/{title_id}/reviews/` returns data with pagination. '
+            'The value of the `results` parameter is invalid, `score` was not found or was not saved in the POST request'
         )
         assert review.get('author') == admin.username, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/` возвращаете данные с пагинацией. '
-            'Значение параметра `results` неправильное, `author` не найдено или не сохранилось при POST запросе.'
+            'Check that a GET request to `/api/v1/titles/{title_id}/reviews/` returns data with pagination. '
+            'The value of the `results` parameter is invalid, `author` was not found or was not saved in the POST request.'
         )
         assert review.get('pub_date'), (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/` возвращаете данные с пагинацией. '
-            'Значение параметра `results` неправильное, `pub_date` не найдено.'
+            'Check that a GET request to `/api/v1/titles/{title_id}/reviews/` returns data with pagination. '
+            'The value of the `results` parameter is invalid, `pub_date` not found.'
         )
         assert type(review.get('id')) == int, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/` возвращаете данные с пагинацией. '
-            'Значение параметра `results` неправильное, значение `id` нет или не является целым числом.'
+            'Check that a GET request to `/api/v1/titles/{title_id}/reviews/` returns data with pagination. '
+            'The value of the `results` parameter is invalid, the value of `id` is not present or is not an integer.'
         )
 
         response = admin_client.get(f'/api/v1/titles/{titles[0]["id"]}/')
         data = response.json()
         assert data.get('rating') == 4, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/` '
-            'с отзывами возвращается правильно значение `rating`'
+            'Check that GET request `/api/v1/titles/{title_id}/` '
+            'with reviews returns the correct value of `rating`'
         )
         response = admin_client.get(f'/api/v1/titles/{titles[1]["id"]}/')
         data = response.json()
         assert data.get('rating') == 3, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/` '
-            'с отзывами возвращается правильно значение `rating`'
+            'Check that GET request `/api/v1/titles/{title_id}/` '
+            'with reviews returns the correct value of `rating`'
         )
 
     @pytest.mark.django_db(transaction=True)
@@ -202,58 +202,58 @@ class Test05ReviewAPI:
         reviews, titles, user, moderator = create_reviews(admin_client, admin)
         response = client.get(f'/api/v1/titles/{titles[0]["id"]}/reviews/{reviews[0]["id"]}/')
         assert response.status_code != 404, (
-            'Страница `/api/v1/titles/{title_id}/reviews/{review_id}/` не найдена, проверьте этот адрес в *urls.py*'
+            'Page `/api/v1/titles/{title_id}/reviews/{review_id}/` not found, check this address in *urls.py*'
         )
         assert response.status_code == 200, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/{review_id}/` '
-            'без токена авторизации возвращается статус 200'
+            'Check that on GET request `/api/v1/titles/{title_id}/reviews/{review_id}/` '
+            'without authorization token returns status 200'
         )
         data = response.json()
         assert type(data.get('id')) == int, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/{review_id}/` '
-            'возвращаете данные объекта. Значение `id` нет или не является целым числом.'
+            'Check that on GET request `/api/v1/titles/{title_id}/reviews/{review_id}/` '
+            'return object data. The value of `id` is not present or is not an integer.'
         )
         assert data.get('score') == reviews[0]['score'], (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/{review_id}/` '
-            'возвращаете данные объекта. Значение `score` неправильное.'
+            'Check that on GET request `/api/v1/titles/{title_id}/reviews/{review_id}/` '
+            'return object data. The value of `score` is invalid.'
         )
         assert data.get('text') == reviews[0]['text'], (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/{review_id}/` '
-            'возвращаете данные объекта. Значение `text` неправильное.'
+            'Check that on GET request `/api/v1/titles/{title_id}/reviews/{review_id}/` '
+            'return object data. The value of `text` is invalid.'
         )
         assert data.get('author') == reviews[0]['author'], (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/{review_id}/` '
-            'возвращаете данные объекта. Значение `author` неправильное.'
+            'Check that on GET request `/api/v1/titles/{title_id}/reviews/{review_id}/` '
+            'return object data. The value of `author` is invalid.'
         )
 
-        review_text = 'Топ ваще!!'
+        review_text = 'Top finally!!'
         data = {
             'text': review_text,
             'score': 10
         }
         response = admin_client.patch(f'/api/v1/titles/{titles[0]["id"]}/reviews/{reviews[0]["id"]}/', data=data)
         assert response.status_code == 200, (
-            'Проверьте, что при PATCH запросе `/api/v1/titles/{title_id}/reviews/{review_id}/` '
-            'возвращается статус 200'
+            'Check that on PATCH request `/api/v1/titles/{title_id}/reviews/{review_id}/` '
+            'returning status 200'
         )
         data = response.json()
         assert data.get('text') == review_text, (
-            'Проверьте, что при PATCH запросе `/api/v1/titles/{title_id}/reviews/{review_id}/` '
-            'возвращаете данные объекта. Значение `text` изменено.'
+            'Check that on PATCH request `/api/v1/titles/{title_id}/reviews/{review_id}/` '
+            'return object data. The value of `text` has been changed.'
         )
         response = admin_client.get(f'/api/v1/titles/{titles[0]["id"]}/reviews/{reviews[0]["id"]}/')
         assert response.status_code == 200, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/reviews/{review_id}/` '
-            'без токена авторизации возвращается статус 200'
+            'Check that on GET request `/api/v1/titles/{title_id}/reviews/{review_id}/` '
+            'without authorization token returns status 200'
         )
         data = response.json()
         assert data.get('text') == review_text, (
-            'Проверьте, что при PATCH запросе `/api/v1/titles/{title_id}/reviews/{review_id}/` '
-            'изменяете значение `text`.'
+            'Check that on PATCH request `/api/v1/titles/{title_id}/reviews/{review_id}/` '
+            'change the value of `text`.'
         )
         assert data.get('score') == 10, (
-            'Проверьте, что при PATCH запросе `/api/v1/titles/{title_id}/reviews/{review_id}/` '
-            'изменяете значение `score`.'
+            'Check that on PATCH request `/api/v1/titles/{title_id}/reviews/{review_id}/` '
+            'change the value of `score`.'
         )
 
         client_user = auth_client(user)
@@ -263,8 +263,8 @@ class Test05ReviewAPI:
         }
         response = client_user.patch(f'/api/v1/titles/{titles[0]["id"]}/reviews/{reviews[2]["id"]}/', data=data)
         assert response.status_code == 403, (
-            'Проверьте, что при PATCH запросе `/api/v1/titles/{title_id}/reviews/{review_id}/` '
-            'от обычного пользователя при попытки изменить не свой отзыв возвращается статус 403'
+            'Check that on PATCH request `/api/v1/titles/{title_id}/reviews/{review_id}/` '
+            'from a regular user, when trying to change a review that is not their own, a status 403 is returned'
         )
 
         data = {
@@ -273,31 +273,31 @@ class Test05ReviewAPI:
         }
         response = client_user.patch(f'/api/v1/titles/{titles[0]["id"]}/reviews/{reviews[1]["id"]}/', data=data)
         assert response.status_code == 200, (
-            'Проверьте, что при PATCH запросе `/api/v1/titles/{title_id}/reviews/{review_id}/` '
-            'возвращается статус 200'
+            'Check that on PATCH request `/api/v1/titles/{title_id}/reviews/{review_id}/` '
+            'returning status 200'
         )
         data = response.json()
         assert data.get('text') == 'jdfk', (
-            'Проверьте, что при PATCH запросе `/api/v1/titles/{title_id}/reviews/{review_id}/` '
-            'возвращаете данные объекта. Значение `text` изменено.'
+            'Check that on PATCH request `/api/v1/titles/{title_id}/reviews/{review_id}/` '
+            'return object data. The value of `text` has been changed.'
         )
         response = admin_client.get(f'/api/v1/titles/{titles[0]["id"]}/')
         data = response.json()
         assert data.get('rating') == 7, (
-            'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/` '
-            'с отзывами возвращается правильно значение `rating`'
+            'Check that GET request `/api/v1/titles/{title_id}/` '
+            'with reviews returns the correct value of `rating`'
         )
 
         client_moderator = auth_client(moderator)
         response = client_moderator.delete(f'/api/v1/titles/{titles[0]["id"]}/reviews/{reviews[1]["id"]}/')
         assert response.status_code == 204, (
-            'Проверьте, что при DELETE запросе `/api/v1/titles/{title_id}/reviews/{review_id}/` '
-            'возвращаете статус 204'
+            'Check that on DELETE request `/api/v1/titles/{title_id}/reviews/{review_id}/` '
+            'return status 204'
         )
         response = admin_client.get(f'/api/v1/titles/{titles[0]["id"]}/reviews/')
         test_data = response.json()['results']
         assert len(test_data) == len(reviews) - 1, (
-            'Проверьте, что при DELETE запросе `/api/v1/titles/{title_id}/reviews/{review_id}/` удаляете объект'
+            'Check that when you DELETE request `/api/v1/titles/{title_id}/reviews/{review_id}/` you are deleting the object'
         )
 
     def check_permissions(self, user, user_name, reviews, titles):
@@ -305,13 +305,13 @@ class Test05ReviewAPI:
         data = {'text': 'jdfk', 'score': 7}
         response = client_user.patch(f'/api/v1/titles/{titles[0]["id"]}/reviews/{reviews[0]["id"]}/', data=data)
         assert response.status_code == 403, (
-            f'Проверьте, что при PATCH запросе `/api/v1/titles/{{title_id}}/reviews/{{review_id}}/` '
-            f'с токеном авторизации {user_name} возвращается статус 403'
+            f'Check that on PATCH request `/api/v1/titles/{{title_id}}/reviews/{{review_id}}/` '
+            f'with auth token {user_name} returns status 403'
         )
         response = client_user.delete(f'/api/v1/titles/{titles[0]["id"]}/reviews/{reviews[0]["id"]}/')
         assert response.status_code == 403, (
-            f'Проверьте, что при DELETE запросе `/api/v1/titles/{{title_id}}/reviews/{{review_id}}/` '
-            f'с токеном авторизации {user_name} возвращается статус 403'
+            f'Check that on DELETE request `/api/v1/titles/{{title_id}}/reviews/{{review_id}}/` '
+            f'with auth token {user_name} returns status 403'
         )
 
     @pytest.mark.django_db(transaction=True)
@@ -320,17 +320,17 @@ class Test05ReviewAPI:
         data = {'text': 'jdfk', 'score': 7}
         response = client.post(f'/api/v1/titles/{titles[0]["id"]}/reviews/', data=data)
         assert response.status_code == 401, (
-            'Проверьте, что при POST запросе `/api/v1/titles/{{title_id}}/reviews/` '
-            'без токена авторизации возвращается статус 401'
+            'Check that when POSTing `/api/v1/titles/{{title_id}}/reviews/` '
+            'no auth token returned status 401'
         )
         response = client.patch(f'/api/v1/titles/{titles[0]["id"]}/reviews/{reviews[1]["id"]}/', data=data)
         assert response.status_code == 401, (
-            'Проверьте, что при PATCH запросе `/api/v1/titles/{{title_id}}/reviews/{{review_id}}/` '
-            'без токена авторизации возвращается статус 401'
+            'Check that on PATCH request `/api/v1/titles/{{title_id}}/reviews/{{review_id}}/` '
+            'no auth token returned status 401'
         )
         response = client.delete(f'/api/v1/titles/{titles[0]["id"]}/reviews/{reviews[1]["id"]}/')
         assert response.status_code == 401, (
-            'Проверьте, что при DELETE запросе `/api/v1/titles/{{title_id}}/reviews/{{review_id}}/` '
-            'без токена авторизации возвращается статус 401'
+            'Check that on DELETE request `/api/v1/titles/{{title_id}}/reviews/{{review_id}}/` '
+            'no auth token returned status 401'
         )
-        self.check_permissions(user, 'обычного пользователя', reviews, titles)
+        self.check_permissions(user, 'ordinary user', reviews, titles)
