@@ -80,7 +80,6 @@ python manage.py runserver
 
 ## Programs for sending requests
 
-### Program options for sending requests
 * API testing via httpie - API console client.
 If you like this console API client, [you can find installation instructions there, on the developers' website.](https://httpie.io/docs/cli/installation)
 
@@ -156,7 +155,7 @@ Postman is a popular and convenient API client that can send requests and show r
 ```
 
 ## Request examples
-Examples of requests, access rights, possible answers are available in the [documentation] attached to the project (http://127.0.0.1:8000/redoc/)
+Examples of requests, access rights, possible answers are available in the [documentation](http://127.0.0.1:8000/redoc/) attached to the project 
 
 ## Authors
 - [Aleh Maslau](https://github.com/Oleg-2006)
