@@ -24,7 +24,7 @@ User = get_user_model()
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    '''
+    """
     list:
     Getting a list of all users.
 
@@ -42,7 +42,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     destroy:
     Deleting a user by username.
-    '''
+    """
     queryset = User.objects.all()
     serializer_class = AdminUserSerializer
     permission_classes = (CustomAdminPermission,)
