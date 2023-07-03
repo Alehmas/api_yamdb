@@ -894,7 +894,7 @@ paths:
       - name: username
         in: path
         required: true
-        description: Username пользователя
+        description: Username
         schema:
           type: string
     get:
@@ -1068,7 +1068,7 @@ components:
             - admin
 
     Title:
-      title: Объект
+      title: object
       type: object
       required:
         - name
@@ -1139,7 +1139,7 @@ components:
       - slug
 
     Review:
-      title: Отзыв
+      title: Review
       type: object
       description: Review details
       required:
@@ -1152,7 +1152,7 @@ components:
           readOnly: true
         text:
           type: string
-          title: Текст review
+          title: Text review
         author:
           type: string
           title: user username

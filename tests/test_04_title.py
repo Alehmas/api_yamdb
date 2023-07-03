@@ -109,8 +109,8 @@ class Test04TitleAPI:
             'or was not saved in the POST request.'
         )
         assert type(title.get('id')) == int, (
-            'Проверьте, что при GET запросе `/api/v1/titles/` возвращаете данные с пагинацией. '
-            'Значение параметра `results` неправильное, значение `id` нет или не является целым числом.'
+            'Check that GET request to `/api/v1/titles/` returns data with pagination. '
+            'The value of the `results` parameter is invalid, the value of `id` is not present or is not an integer.'
         )
         data = {'name': 'Turn', 'year': 2020, 'genre': [genres[1]['slug']],
                 'category': categories[1]['slug'], 'description': 'Cool dive'}

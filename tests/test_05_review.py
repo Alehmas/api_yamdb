@@ -110,8 +110,8 @@ class Test05ReviewAPI:
         data = {'text': 'asfd', 'score': 0}
         response = admin_client.post(f'/api/v1/titles/{titles[0]["id"]}/reviews/', data=data)
         assert response.status_code == 400, (
-            'Проверьте, что при POST запросе `/api/v1/titles/{title_id}/reviews/` '
-            'с `score` меньше 1 возвращается статус 400.'
+            'Probably when POSTing `/api/v1/titles/{title_id}/reviews/` '
+            'with `score` less than 1 returns status 400.'
         )
         data = {'text': 'asfd', 'score': 2}
         response = admin_client.post(f'/api/v1/titles/{titles[0]["id"]}/reviews/', data=data)
