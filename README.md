@@ -41,7 +41,7 @@ leave only one review.
 ## Run the project locally
 - Clone the repository
 ```
-git clone https://github.com/Oleg-2006/api_yamdb
+git clone git@github.com:Alehmas/api_yamdb.git
 ```
 - Move to a new directory
 ```
